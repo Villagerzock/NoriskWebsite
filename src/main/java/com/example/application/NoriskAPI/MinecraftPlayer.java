@@ -4,6 +4,7 @@ import com.example.application.exceptions.PlayerNotFoundException;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 
 import java.io.BufferedReader;
@@ -14,11 +15,37 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.UUID;
 
 public class MinecraftPlayer {
     private final String name;
     private final String id;
     private final Stats stats;
+    public MinecraftPlayer(UUID uuid){
+        String apiUrl = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-","");
+        try {
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            if (connection.getResponseCode() != 200){
+                throw new PlayerNotFoundException("Minecraft Servers do no longer recognise PlayerID");
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            for (String line : reader.lines().toList()){
+                response.append(line);
+            }
+            reader.close();
+            Gson gson = new Gson();
+            JsonObject object = gson.fromJson(response.toString(), JsonObject.class);
+            id = uuid.toString().replace("-","");
+            name = object.get("name").getAsString();
+            stats = getStatsFromAPI();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public MinecraftPlayer(String name){
         this.name = name;
         try {
@@ -49,7 +76,7 @@ public class MinecraftPlayer {
         return stats;
     }
     private Stats getStatsFromAPI(){
-        String apiUrl = "https://api.hglabor.de/stats/ffa//" + fromHexToUUID(getUuid());
+        String apiUrl = "https://api.hglabor.de/stats/ffa/" + fromHexToUUID(getUuid());
         try {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
