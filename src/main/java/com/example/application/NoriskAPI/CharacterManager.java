@@ -54,7 +54,6 @@ public class CharacterManager {
                     verticalLayout.add(layout);
                 });
             });
-            System.out.println(verticalLayout.getChildren().toList());
             return verticalLayout;
         }
     }

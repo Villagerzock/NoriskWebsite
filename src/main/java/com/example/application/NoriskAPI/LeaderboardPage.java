@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,34 +35,29 @@ public class LeaderboardPage {
     }
 
     private List<MinecraftPlayer> players;
-    public LeaderboardPage(int page, Sort sort){
+    public LeaderboardPage(int page, Sort sort) throws IOException {
         String apiUrl = "https://api.hglabor.de/stats/ffa/" + "top?page="+page+"&sort="+sort.name();
-        try {
-            URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            if (connection.getResponseCode() != 200){
-                throw new LeaderboardNotFound("This page does not exist on the Leaderboard");
-            }
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            for (String line : reader.lines().toList()){
-                response.append(line);
-            }
-            reader.close();
-            Gson gson = new Gson();
-            JsonArray array = gson.fromJson(response.toString(), JsonArray.class);
-            players = new ArrayList<>();
-            for (JsonElement element : array){
-                JsonObject object = element.getAsJsonObject();
-                UUID uuid = UUID.fromString(object.get("playerId").getAsString());
-                players.add(new MinecraftPlayer(uuid));
-            }
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        URL url = new URL(apiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        if (connection.getResponseCode() != 200){
+            throw new LeaderboardNotFound("This page does not exist on the Leaderboard");
         }
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        for (String line : reader.lines().toList()){
+            response.append(line);
+        }
+        reader.close();
+        Gson gson = new Gson();
+        JsonArray array = gson.fromJson(response.toString(), JsonArray.class);
+        players = new ArrayList<>();
+        for (JsonElement element : array){
+            JsonObject object = element.getAsJsonObject();
+            UUID uuid = UUID.fromString(object.get("playerId").getAsString());
+            players.add(new MinecraftPlayer(uuid,object));
+        }
+        System.out.println("Got API Data for page: " + page);
     }
 }

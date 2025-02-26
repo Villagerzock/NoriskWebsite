@@ -1,5 +1,6 @@
 package com.example.application.views;
 
+import com.example.application.views.kit.KitView;
 import com.example.application.views.leaderboard.LeaderboardView;
 import com.example.application.views.playerData.PlayerDataView;
 import com.vaadin.flow.component.Component;
@@ -70,5 +71,11 @@ public class MainLayout extends AppLayout {
                 new MenuItemInfo("Leaderboard", VaadinIcon.BULLETS.create(), LeaderboardView.class),
                 new MenuItemInfo("Player Data", VaadinIcon.USER.create(), PlayerDataView.class)
         };
+    }
+    private static class ImageIcon extends Image{
+        public ImageIcon(String path){
+            super(path,"");
+            addClassName("icon");
+        }
     }
 }

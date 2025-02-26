@@ -1,14 +1,4 @@
 @import url('./main-layout.css');
-.sprite-container- {
-    clip-path: inset(128px 768px 768px 128px);
-}
-.sprite- {
-    width: 1024px;
-    height: 1024px;
-    background-size: 1024px 1024px;
-    background-position: -128px -128px;
-    image-rendering: pixelated;
-}
 .player-head-container {
     transform: scale(16);
     transform-origin: 11px 12px;
@@ -21,8 +11,24 @@
     height: 64px;
     image-rendering: pixelated;
 }
+.leaderboard-player-head-container {
+    transform: scale(4);
+    transform-origin: 6px 5px;
+}
+.leaderboard-sprite-container{
+    clip-path: inset(8px 48px 53px 8px);
+}
 .button-sprite{
     width: 128px;
     height: 128px;
+    image-rendering: pixelated;
+}
+.icon{
+    width: 32px;
+    height: 32px;
+}
+.inventory{
+    width: 1024px;
+    height: 1024px;
     image-rendering: pixelated;
 }

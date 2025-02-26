@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import jakarta.validation.constraints.Min;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class MinecraftPlayer {
     private final String name;
     private final String id;
     private final Stats stats;
-    public MinecraftPlayer(UUID uuid){
+    public MinecraftPlayer(UUID uuid, JsonObject apiValue){
         String apiUrl = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-","");
         try {
             URL url = new URL(apiUrl);
@@ -41,10 +42,13 @@ public class MinecraftPlayer {
             JsonObject object = gson.fromJson(response.toString(), JsonObject.class);
             id = uuid.toString().replace("-","");
             name = object.get("name").getAsString();
-            stats = getStatsFromAPI();
+            this.stats = Stats.Serializer.INSTANCE.read(apiValue,this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public String getPlace(){
+        return "#1";
     }
     public MinecraftPlayer(String name){
         this.name = name;
