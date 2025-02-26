@@ -77,7 +77,7 @@ public class LeaderboardView extends VerticalLayout implements HasUrlParameter<I
             @Override
             public Object apply(MinecraftPlayer player) {
                 index++;
-                return "#" + index + (page * 100);
+                return "#" + (index + (page * 100));
             }
         });
         grid.addComponentColumn(createComponentProvide(MinecraftPlayer::getName,beforeEvent.getUI())).setHeader("Name");
@@ -103,20 +103,6 @@ public class LeaderboardView extends VerticalLayout implements HasUrlParameter<I
     }
     public  ValueProvider<MinecraftPlayer, Component> createComponentProvide(ValueProvider<MinecraftPlayer,String> provider, UI ui){
         return (player -> {
-            HorizontalLayout layout = new HorizontalLayout();
-            Div playerHead = new Div();
-            Image playerIcon = new Image("images/steve.png","Steve");
-            if (player.getSkinURL() != null){
-                playerIcon = new Image(player.getSkinURL(),player.getName());
-            }
-
-            playerIcon.addClassName("sprite");
-            playerHead.add(playerIcon);
-            playerHead.addClassName("leaderboard-sprite-container");
-            Div playerHeadContainer = new Div(playerHead);
-            playerHeadContainer.addClassName("leaderboard-player-head-container");
-
-
             Span text = new Span(provider.apply(player));
             text.getStyle()
                     .set("cursor","pointer")
@@ -124,7 +110,6 @@ public class LeaderboardView extends VerticalLayout implements HasUrlParameter<I
             text.addClickListener((spanClickEvent -> {
                 ui.navigate("player_data/" + player.getName());
             }));
-            layout.setVerticalComponentAlignment(Alignment.CENTER,text);
             return text;
         });
     }
